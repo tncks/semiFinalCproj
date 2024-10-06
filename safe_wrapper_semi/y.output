@@ -1,0 +1,1367 @@
+   0  $accept : program $end
+
+   1  program : stmt_seq
+
+   2  stmt_seq : stmt_seq stmt
+   3           | stmt
+
+   4  stmt : var_stmt
+   5       | fun_stmt
+   6       | error
+
+   7  var_stmt : type_spec identifier SEMI
+   8           | type_spec identifier LBRACE number RBRACE SEMI
+
+   9  type_spec : INT
+  10            | VOID
+
+  11  fun_stmt : type_spec identifier LPAREN params RPAREN comp_stmt
+
+  12  params : param_list
+  13         | VOID
+  14         |
+
+  15  param_list : param_list COMMA param
+  16             | param
+
+  17  param : type_spec identifier
+  18        | type_spec identifier LBRACE RBRACE
+
+  19  comp_stmt : LCURLY local_stmt stmt_list RCURLY
+  20            | LCURLY stmt_list RCURLY
+  21            | LCURLY local_stmt RCURLY
+  22            | LCURLY RCURLY
+
+  23  local_stmt : local_stmt var_stmt
+  24             | var_stmt
+
+  25  stmt_list : stmt_list statement
+  26            | statement
+
+  27  statement : expr_stmt
+  28            | comp_stmt
+  29            | sel_stmt
+  30            | it_stmt
+  31            | ret_stmt
+
+  32  expr_stmt : expr SEMI
+  33            | SEMI
+
+  34  sel_stmt : IF LPAREN expr RPAREN statement
+  35           | IF LPAREN expr RPAREN statement ELSE statement
+
+  36  it_stmt : WHILE LPAREN expr RPAREN statement
+
+  37  ret_stmt : RETURN SEMI
+  38           | RETURN expr SEMI
+
+  39  expr : var ASSIGN expr
+  40       | simp_expr
+
+  41  var : identifier
+  42      | identifier LBRACE expr RBRACE
+
+  43  simp_expr : sum_exp relat sum_exp
+  44            | sum_exp
+
+  45  relat : LT
+  46        | LE
+  47        | GT
+  48        | GE
+  49        | EQ
+  50        | NE
+
+  51  sum_exp : sum_exp sum term
+  52          | term
+
+  53  sum : PLUS
+  54      | MINUS
+
+  55  term : term mult factor
+  56       | factor
+
+  57  mult : TIMES
+  58       | OVER
+
+  59  factor : LPAREN expr RPAREN
+  60         | var
+  61         | activation
+  62         | number
+  63         | error
+
+  64  activation : identifier LPAREN RPAREN
+  65             | identifier LPAREN args_seq RPAREN
+
+  66  args_seq : args_seq COMMA expr
+  67           | expr
+
+  68  number : NUM
+
+  69  identifier : ID
+
+state 0
+	$accept : . program $end  (0)
+
+	error  shift 1
+	INT  shift 2
+	VOID  shift 3
+	.  error
+
+	program  goto 4
+	stmt_seq  goto 5
+	stmt  goto 6
+	var_stmt  goto 7
+	fun_stmt  goto 8
+	type_spec  goto 9
+
+
+state 1
+	stmt : error .  (6)
+
+	.  reduce 6
+
+
+state 2
+	type_spec : INT .  (9)
+
+	.  reduce 9
+
+
+state 3
+	type_spec : VOID .  (10)
+
+	.  reduce 10
+
+
+state 4
+	$accept : program . $end  (0)
+
+	$end  accept
+
+
+state 5
+	program : stmt_seq .  (1)
+	stmt_seq : stmt_seq . stmt  (2)
+
+	error  shift 1
+	INT  shift 2
+	VOID  shift 3
+	$end  reduce 1
+
+	stmt  goto 10
+	var_stmt  goto 7
+	fun_stmt  goto 8
+	type_spec  goto 9
+
+
+state 6
+	stmt_seq : stmt .  (3)
+
+	.  reduce 3
+
+
+state 7
+	stmt : var_stmt .  (4)
+
+	.  reduce 4
+
+
+state 8
+	stmt : fun_stmt .  (5)
+
+	.  reduce 5
+
+
+state 9
+	var_stmt : type_spec . identifier SEMI  (7)
+	var_stmt : type_spec . identifier LBRACE number RBRACE SEMI  (8)
+	fun_stmt : type_spec . identifier LPAREN params RPAREN comp_stmt  (11)
+
+	ID  shift 11
+	.  error
+
+	identifier  goto 12
+
+
+state 10
+	stmt_seq : stmt_seq stmt .  (2)
+
+	.  reduce 2
+
+
+state 11
+	identifier : ID .  (69)
+
+	.  reduce 69
+
+
+state 12
+	var_stmt : type_spec identifier . SEMI  (7)
+	var_stmt : type_spec identifier . LBRACE number RBRACE SEMI  (8)
+	fun_stmt : type_spec identifier . LPAREN params RPAREN comp_stmt  (11)
+
+	SEMI  shift 13
+	LPAREN  shift 14
+	LBRACE  shift 15
+	.  error
+
+
+state 13
+	var_stmt : type_spec identifier SEMI .  (7)
+
+	.  reduce 7
+
+
+state 14
+	fun_stmt : type_spec identifier LPAREN . params RPAREN comp_stmt  (11)
+	params : .  (14)
+
+	INT  shift 2
+	VOID  shift 16
+	RPAREN  reduce 14
+
+	type_spec  goto 17
+	params  goto 18
+	param_list  goto 19
+	param  goto 20
+
+
+state 15
+	var_stmt : type_spec identifier LBRACE . number RBRACE SEMI  (8)
+
+	NUM  shift 21
+	.  error
+
+	number  goto 22
+
+
+state 16
+	type_spec : VOID .  (10)
+	params : VOID .  (13)
+
+	ID  reduce 10
+	RPAREN  reduce 13
+
+
+state 17
+	param : type_spec . identifier  (17)
+	param : type_spec . identifier LBRACE RBRACE  (18)
+
+	ID  shift 11
+	.  error
+
+	identifier  goto 23
+
+
+state 18
+	fun_stmt : type_spec identifier LPAREN params . RPAREN comp_stmt  (11)
+
+	RPAREN  shift 24
+	.  error
+
+
+state 19
+	params : param_list .  (12)
+	param_list : param_list . COMMA param  (15)
+
+	COMMA  shift 25
+	RPAREN  reduce 12
+
+
+state 20
+	param_list : param .  (16)
+
+	.  reduce 16
+
+
+state 21
+	number : NUM .  (68)
+
+	.  reduce 68
+
+
+state 22
+	var_stmt : type_spec identifier LBRACE number . RBRACE SEMI  (8)
+
+	RBRACE  shift 26
+	.  error
+
+
+state 23
+	param : type_spec identifier .  (17)
+	param : type_spec identifier . LBRACE RBRACE  (18)
+
+	LBRACE  shift 27
+	COMMA  reduce 17
+	RPAREN  reduce 17
+
+
+state 24
+	fun_stmt : type_spec identifier LPAREN params RPAREN . comp_stmt  (11)
+
+	LCURLY  shift 28
+	.  error
+
+	comp_stmt  goto 29
+
+
+state 25
+	param_list : param_list COMMA . param  (15)
+
+	INT  shift 2
+	VOID  shift 3
+	.  error
+
+	type_spec  goto 17
+	param  goto 30
+
+
+state 26
+	var_stmt : type_spec identifier LBRACE number RBRACE . SEMI  (8)
+
+	SEMI  shift 31
+	.  error
+
+
+state 27
+	param : type_spec identifier LBRACE . RBRACE  (18)
+
+	RBRACE  shift 32
+	.  error
+
+
+state 28
+	comp_stmt : LCURLY . local_stmt stmt_list RCURLY  (19)
+	comp_stmt : LCURLY . stmt_list RCURLY  (20)
+	comp_stmt : LCURLY . local_stmt RCURLY  (21)
+	comp_stmt : LCURLY . RCURLY  (22)
+
+	error  shift 33
+	IF  shift 34
+	RETURN  shift 35
+	WHILE  shift 36
+	INT  shift 2
+	VOID  shift 3
+	NUM  shift 21
+	ID  shift 11
+	SEMI  shift 37
+	LPAREN  shift 38
+	LCURLY  shift 28
+	RCURLY  shift 39
+	.  error
+
+	var_stmt  goto 40
+	type_spec  goto 41
+	identifier  goto 42
+	number  goto 43
+	comp_stmt  goto 44
+	local_stmt  goto 45
+	stmt_list  goto 46
+	statement  goto 47
+	expr_stmt  goto 48
+	sel_stmt  goto 49
+	it_stmt  goto 50
+	ret_stmt  goto 51
+	expr  goto 52
+	var  goto 53
+	simp_expr  goto 54
+	sum_exp  goto 55
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+
+
+state 29
+	fun_stmt : type_spec identifier LPAREN params RPAREN comp_stmt .  (11)
+
+	.  reduce 11
+
+
+state 30
+	param_list : param_list COMMA param .  (15)
+
+	.  reduce 15
+
+
+state 31
+	var_stmt : type_spec identifier LBRACE number RBRACE SEMI .  (8)
+
+	.  reduce 8
+
+
+state 32
+	param : type_spec identifier LBRACE RBRACE .  (18)
+
+	.  reduce 18
+
+
+state 33
+	factor : error .  (63)
+
+	.  reduce 63
+
+
+state 34
+	sel_stmt : IF . LPAREN expr RPAREN statement  (34)
+	sel_stmt : IF . LPAREN expr RPAREN statement ELSE statement  (35)
+
+	LPAREN  shift 59
+	.  error
+
+
+state 35
+	ret_stmt : RETURN . SEMI  (37)
+	ret_stmt : RETURN . expr SEMI  (38)
+
+	error  shift 33
+	NUM  shift 21
+	ID  shift 11
+	SEMI  shift 60
+	LPAREN  shift 38
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	expr  goto 61
+	var  goto 53
+	simp_expr  goto 54
+	sum_exp  goto 55
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+
+
+state 36
+	it_stmt : WHILE . LPAREN expr RPAREN statement  (36)
+
+	LPAREN  shift 62
+	.  error
+
+
+state 37
+	expr_stmt : SEMI .  (33)
+
+	.  reduce 33
+
+
+state 38
+	factor : LPAREN . expr RPAREN  (59)
+
+	error  shift 33
+	NUM  shift 21
+	ID  shift 11
+	LPAREN  shift 38
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	expr  goto 63
+	var  goto 53
+	simp_expr  goto 54
+	sum_exp  goto 55
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+
+
+state 39
+	comp_stmt : LCURLY RCURLY .  (22)
+
+	.  reduce 22
+
+
+state 40
+	local_stmt : var_stmt .  (24)
+
+	.  reduce 24
+
+
+state 41
+	var_stmt : type_spec . identifier SEMI  (7)
+	var_stmt : type_spec . identifier LBRACE number RBRACE SEMI  (8)
+
+	ID  shift 11
+	.  error
+
+	identifier  goto 64
+
+
+state 42
+	var : identifier .  (41)
+	var : identifier . LBRACE expr RBRACE  (42)
+	activation : identifier . LPAREN RPAREN  (64)
+	activation : identifier . LPAREN args_seq RPAREN  (65)
+
+	LPAREN  shift 65
+	LBRACE  shift 66
+	PLUS  reduce 41
+	MINUS  reduce 41
+	OVER  reduce 41
+	TIMES  reduce 41
+	LT  reduce 41
+	LE  reduce 41
+	GT  reduce 41
+	GE  reduce 41
+	EQ  reduce 41
+	NE  reduce 41
+	ASSIGN  reduce 41
+	SEMI  reduce 41
+	COMMA  reduce 41
+	RPAREN  reduce 41
+	RBRACE  reduce 41
+
+
+state 43
+	factor : number .  (62)
+
+	.  reduce 62
+
+
+state 44
+	statement : comp_stmt .  (28)
+
+	.  reduce 28
+
+
+state 45
+	comp_stmt : LCURLY local_stmt . stmt_list RCURLY  (19)
+	comp_stmt : LCURLY local_stmt . RCURLY  (21)
+	local_stmt : local_stmt . var_stmt  (23)
+
+	error  shift 33
+	IF  shift 34
+	RETURN  shift 35
+	WHILE  shift 36
+	INT  shift 2
+	VOID  shift 3
+	NUM  shift 21
+	ID  shift 11
+	SEMI  shift 37
+	LPAREN  shift 38
+	LCURLY  shift 28
+	RCURLY  shift 67
+	.  error
+
+	var_stmt  goto 68
+	type_spec  goto 41
+	identifier  goto 42
+	number  goto 43
+	comp_stmt  goto 44
+	stmt_list  goto 69
+	statement  goto 47
+	expr_stmt  goto 48
+	sel_stmt  goto 49
+	it_stmt  goto 50
+	ret_stmt  goto 51
+	expr  goto 52
+	var  goto 53
+	simp_expr  goto 54
+	sum_exp  goto 55
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+
+
+state 46
+	comp_stmt : LCURLY stmt_list . RCURLY  (20)
+	stmt_list : stmt_list . statement  (25)
+
+	error  shift 33
+	IF  shift 34
+	RETURN  shift 35
+	WHILE  shift 36
+	NUM  shift 21
+	ID  shift 11
+	SEMI  shift 37
+	LPAREN  shift 38
+	LCURLY  shift 28
+	RCURLY  shift 70
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	comp_stmt  goto 44
+	statement  goto 71
+	expr_stmt  goto 48
+	sel_stmt  goto 49
+	it_stmt  goto 50
+	ret_stmt  goto 51
+	expr  goto 52
+	var  goto 53
+	simp_expr  goto 54
+	sum_exp  goto 55
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+
+
+state 47
+	stmt_list : statement .  (26)
+
+	.  reduce 26
+
+
+state 48
+	statement : expr_stmt .  (27)
+
+	.  reduce 27
+
+
+state 49
+	statement : sel_stmt .  (29)
+
+	.  reduce 29
+
+
+state 50
+	statement : it_stmt .  (30)
+
+	.  reduce 30
+
+
+state 51
+	statement : ret_stmt .  (31)
+
+	.  reduce 31
+
+
+state 52
+	expr_stmt : expr . SEMI  (32)
+
+	SEMI  shift 72
+	.  error
+
+
+state 53
+	expr : var . ASSIGN expr  (39)
+	factor : var .  (60)
+
+	ASSIGN  shift 73
+	PLUS  reduce 60
+	MINUS  reduce 60
+	OVER  reduce 60
+	TIMES  reduce 60
+	LT  reduce 60
+	LE  reduce 60
+	GT  reduce 60
+	GE  reduce 60
+	EQ  reduce 60
+	NE  reduce 60
+	SEMI  reduce 60
+	COMMA  reduce 60
+	RPAREN  reduce 60
+	RBRACE  reduce 60
+
+
+state 54
+	expr : simp_expr .  (40)
+
+	.  reduce 40
+
+
+state 55
+	simp_expr : sum_exp . relat sum_exp  (43)
+	simp_expr : sum_exp .  (44)
+	sum_exp : sum_exp . sum term  (51)
+
+	PLUS  shift 74
+	MINUS  shift 75
+	LT  shift 76
+	LE  shift 77
+	GT  shift 78
+	GE  shift 79
+	EQ  shift 80
+	NE  shift 81
+	SEMI  reduce 44
+	COMMA  reduce 44
+	RPAREN  reduce 44
+	RBRACE  reduce 44
+
+	relat  goto 82
+	sum  goto 83
+
+
+state 56
+	sum_exp : term .  (52)
+	term : term . mult factor  (55)
+
+	OVER  shift 84
+	TIMES  shift 85
+	PLUS  reduce 52
+	MINUS  reduce 52
+	LT  reduce 52
+	LE  reduce 52
+	GT  reduce 52
+	GE  reduce 52
+	EQ  reduce 52
+	NE  reduce 52
+	SEMI  reduce 52
+	COMMA  reduce 52
+	RPAREN  reduce 52
+	RBRACE  reduce 52
+
+	mult  goto 86
+
+
+state 57
+	term : factor .  (56)
+
+	.  reduce 56
+
+
+state 58
+	factor : activation .  (61)
+
+	.  reduce 61
+
+
+state 59
+	sel_stmt : IF LPAREN . expr RPAREN statement  (34)
+	sel_stmt : IF LPAREN . expr RPAREN statement ELSE statement  (35)
+
+	error  shift 33
+	NUM  shift 21
+	ID  shift 11
+	LPAREN  shift 38
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	expr  goto 87
+	var  goto 53
+	simp_expr  goto 54
+	sum_exp  goto 55
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+
+
+state 60
+	ret_stmt : RETURN SEMI .  (37)
+
+	.  reduce 37
+
+
+state 61
+	ret_stmt : RETURN expr . SEMI  (38)
+
+	SEMI  shift 88
+	.  error
+
+
+state 62
+	it_stmt : WHILE LPAREN . expr RPAREN statement  (36)
+
+	error  shift 33
+	NUM  shift 21
+	ID  shift 11
+	LPAREN  shift 38
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	expr  goto 89
+	var  goto 53
+	simp_expr  goto 54
+	sum_exp  goto 55
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+
+
+state 63
+	factor : LPAREN expr . RPAREN  (59)
+
+	RPAREN  shift 90
+	.  error
+
+
+state 64
+	var_stmt : type_spec identifier . SEMI  (7)
+	var_stmt : type_spec identifier . LBRACE number RBRACE SEMI  (8)
+
+	SEMI  shift 13
+	LBRACE  shift 15
+	.  error
+
+
+state 65
+	activation : identifier LPAREN . RPAREN  (64)
+	activation : identifier LPAREN . args_seq RPAREN  (65)
+
+	error  shift 33
+	NUM  shift 21
+	ID  shift 11
+	LPAREN  shift 38
+	RPAREN  shift 91
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	expr  goto 92
+	var  goto 53
+	simp_expr  goto 54
+	sum_exp  goto 55
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+	args_seq  goto 93
+
+
+state 66
+	var : identifier LBRACE . expr RBRACE  (42)
+
+	error  shift 33
+	NUM  shift 21
+	ID  shift 11
+	LPAREN  shift 38
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	expr  goto 94
+	var  goto 53
+	simp_expr  goto 54
+	sum_exp  goto 55
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+
+
+state 67
+	comp_stmt : LCURLY local_stmt RCURLY .  (21)
+
+	.  reduce 21
+
+
+state 68
+	local_stmt : local_stmt var_stmt .  (23)
+
+	.  reduce 23
+
+
+state 69
+	comp_stmt : LCURLY local_stmt stmt_list . RCURLY  (19)
+	stmt_list : stmt_list . statement  (25)
+
+	error  shift 33
+	IF  shift 34
+	RETURN  shift 35
+	WHILE  shift 36
+	NUM  shift 21
+	ID  shift 11
+	SEMI  shift 37
+	LPAREN  shift 38
+	LCURLY  shift 28
+	RCURLY  shift 95
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	comp_stmt  goto 44
+	statement  goto 71
+	expr_stmt  goto 48
+	sel_stmt  goto 49
+	it_stmt  goto 50
+	ret_stmt  goto 51
+	expr  goto 52
+	var  goto 53
+	simp_expr  goto 54
+	sum_exp  goto 55
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+
+
+state 70
+	comp_stmt : LCURLY stmt_list RCURLY .  (20)
+
+	.  reduce 20
+
+
+state 71
+	stmt_list : stmt_list statement .  (25)
+
+	.  reduce 25
+
+
+state 72
+	expr_stmt : expr SEMI .  (32)
+
+	.  reduce 32
+
+
+state 73
+	expr : var ASSIGN . expr  (39)
+
+	error  shift 33
+	NUM  shift 21
+	ID  shift 11
+	LPAREN  shift 38
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	expr  goto 96
+	var  goto 53
+	simp_expr  goto 54
+	sum_exp  goto 55
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+
+
+state 74
+	sum : PLUS .  (53)
+
+	.  reduce 53
+
+
+state 75
+	sum : MINUS .  (54)
+
+	.  reduce 54
+
+
+state 76
+	relat : LT .  (45)
+
+	.  reduce 45
+
+
+state 77
+	relat : LE .  (46)
+
+	.  reduce 46
+
+
+state 78
+	relat : GT .  (47)
+
+	.  reduce 47
+
+
+state 79
+	relat : GE .  (48)
+
+	.  reduce 48
+
+
+state 80
+	relat : EQ .  (49)
+
+	.  reduce 49
+
+
+state 81
+	relat : NE .  (50)
+
+	.  reduce 50
+
+
+state 82
+	simp_expr : sum_exp relat . sum_exp  (43)
+
+	error  shift 33
+	NUM  shift 21
+	ID  shift 11
+	LPAREN  shift 38
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	var  goto 97
+	sum_exp  goto 98
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+
+
+state 83
+	sum_exp : sum_exp sum . term  (51)
+
+	error  shift 33
+	NUM  shift 21
+	ID  shift 11
+	LPAREN  shift 38
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	var  goto 97
+	term  goto 99
+	factor  goto 57
+	activation  goto 58
+
+
+state 84
+	mult : OVER .  (58)
+
+	.  reduce 58
+
+
+state 85
+	mult : TIMES .  (57)
+
+	.  reduce 57
+
+
+state 86
+	term : term mult . factor  (55)
+
+	error  shift 33
+	NUM  shift 21
+	ID  shift 11
+	LPAREN  shift 38
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	var  goto 97
+	factor  goto 100
+	activation  goto 58
+
+
+state 87
+	sel_stmt : IF LPAREN expr . RPAREN statement  (34)
+	sel_stmt : IF LPAREN expr . RPAREN statement ELSE statement  (35)
+
+	RPAREN  shift 101
+	.  error
+
+
+state 88
+	ret_stmt : RETURN expr SEMI .  (38)
+
+	.  reduce 38
+
+
+state 89
+	it_stmt : WHILE LPAREN expr . RPAREN statement  (36)
+
+	RPAREN  shift 102
+	.  error
+
+
+state 90
+	factor : LPAREN expr RPAREN .  (59)
+
+	.  reduce 59
+
+
+state 91
+	activation : identifier LPAREN RPAREN .  (64)
+
+	.  reduce 64
+
+
+state 92
+	args_seq : expr .  (67)
+
+	.  reduce 67
+
+
+state 93
+	activation : identifier LPAREN args_seq . RPAREN  (65)
+	args_seq : args_seq . COMMA expr  (66)
+
+	COMMA  shift 103
+	RPAREN  shift 104
+	.  error
+
+
+state 94
+	var : identifier LBRACE expr . RBRACE  (42)
+
+	RBRACE  shift 105
+	.  error
+
+
+state 95
+	comp_stmt : LCURLY local_stmt stmt_list RCURLY .  (19)
+
+	.  reduce 19
+
+
+state 96
+	expr : var ASSIGN expr .  (39)
+
+	.  reduce 39
+
+
+state 97
+	factor : var .  (60)
+
+	.  reduce 60
+
+
+state 98
+	simp_expr : sum_exp relat sum_exp .  (43)
+	sum_exp : sum_exp . sum term  (51)
+
+	PLUS  shift 74
+	MINUS  shift 75
+	SEMI  reduce 43
+	COMMA  reduce 43
+	RPAREN  reduce 43
+	RBRACE  reduce 43
+
+	sum  goto 83
+
+
+state 99
+	sum_exp : sum_exp sum term .  (51)
+	term : term . mult factor  (55)
+
+	OVER  shift 84
+	TIMES  shift 85
+	PLUS  reduce 51
+	MINUS  reduce 51
+	LT  reduce 51
+	LE  reduce 51
+	GT  reduce 51
+	GE  reduce 51
+	EQ  reduce 51
+	NE  reduce 51
+	SEMI  reduce 51
+	COMMA  reduce 51
+	RPAREN  reduce 51
+	RBRACE  reduce 51
+
+	mult  goto 86
+
+
+state 100
+	term : term mult factor .  (55)
+
+	.  reduce 55
+
+
+state 101
+	sel_stmt : IF LPAREN expr RPAREN . statement  (34)
+	sel_stmt : IF LPAREN expr RPAREN . statement ELSE statement  (35)
+
+	error  shift 33
+	IF  shift 34
+	RETURN  shift 35
+	WHILE  shift 36
+	NUM  shift 21
+	ID  shift 11
+	SEMI  shift 37
+	LPAREN  shift 38
+	LCURLY  shift 28
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	comp_stmt  goto 44
+	statement  goto 106
+	expr_stmt  goto 48
+	sel_stmt  goto 49
+	it_stmt  goto 50
+	ret_stmt  goto 51
+	expr  goto 52
+	var  goto 53
+	simp_expr  goto 54
+	sum_exp  goto 55
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+
+
+state 102
+	it_stmt : WHILE LPAREN expr RPAREN . statement  (36)
+
+	error  shift 33
+	IF  shift 34
+	RETURN  shift 35
+	WHILE  shift 36
+	NUM  shift 21
+	ID  shift 11
+	SEMI  shift 37
+	LPAREN  shift 38
+	LCURLY  shift 28
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	comp_stmt  goto 44
+	statement  goto 107
+	expr_stmt  goto 48
+	sel_stmt  goto 49
+	it_stmt  goto 50
+	ret_stmt  goto 51
+	expr  goto 52
+	var  goto 53
+	simp_expr  goto 54
+	sum_exp  goto 55
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+
+
+state 103
+	args_seq : args_seq COMMA . expr  (66)
+
+	error  shift 33
+	NUM  shift 21
+	ID  shift 11
+	LPAREN  shift 38
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	expr  goto 108
+	var  goto 53
+	simp_expr  goto 54
+	sum_exp  goto 55
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+
+
+state 104
+	activation : identifier LPAREN args_seq RPAREN .  (65)
+
+	.  reduce 65
+
+
+state 105
+	var : identifier LBRACE expr RBRACE .  (42)
+
+	.  reduce 42
+
+
+state 106
+	sel_stmt : IF LPAREN expr RPAREN statement .  (34)
+	sel_stmt : IF LPAREN expr RPAREN statement . ELSE statement  (35)
+
+	ELSE  shift 109
+	error  reduce 34
+	IF  reduce 34
+	RETURN  reduce 34
+	WHILE  reduce 34
+	NUM  reduce 34
+	ID  reduce 34
+	SEMI  reduce 34
+	LPAREN  reduce 34
+	LCURLY  reduce 34
+	RCURLY  reduce 34
+
+
+state 107
+	it_stmt : WHILE LPAREN expr RPAREN statement .  (36)
+
+	.  reduce 36
+
+
+state 108
+	args_seq : args_seq COMMA expr .  (66)
+
+	.  reduce 66
+
+
+state 109
+	sel_stmt : IF LPAREN expr RPAREN statement ELSE . statement  (35)
+
+	error  shift 33
+	IF  shift 34
+	RETURN  shift 35
+	WHILE  shift 36
+	NUM  shift 21
+	ID  shift 11
+	SEMI  shift 37
+	LPAREN  shift 38
+	LCURLY  shift 28
+	.  error
+
+	identifier  goto 42
+	number  goto 43
+	comp_stmt  goto 44
+	statement  goto 110
+	expr_stmt  goto 48
+	sel_stmt  goto 49
+	it_stmt  goto 50
+	ret_stmt  goto 51
+	expr  goto 52
+	var  goto 53
+	simp_expr  goto 54
+	sum_exp  goto 55
+	term  goto 56
+	factor  goto 57
+	activation  goto 58
+
+
+state 110
+	sel_stmt : IF LPAREN expr RPAREN statement ELSE statement .  (35)
+
+	.  reduce 35
+
+
+31 terminals, 31 nonterminals
+70 grammar rules, 111 states
+
+grammar parser grammar
+symbol# value# symbol
+     0      0  $end
+     1    256  error
+     2    257  IF
+     3    258  ELSE
+     4    259  RETURN
+     5    260  WHILE
+     6    261  INT
+     7    262  VOID
+     8    263  NUM
+     9    264  ID
+    10    265  PLUS
+    11    266  MINUS
+    12    267  OVER
+    13    268  TIMES
+    14    269  LT
+    15    270  LE
+    16    271  GT
+    17    272  GE
+    18    273  EQ
+    19    274  NE
+    20    275  ASSIGN
+    21    276  SEMI
+    22    277  COMMA
+    23    278  LPAREN
+    24    279  RPAREN
+    25    280  LBRACE
+    26    281  RBRACE
+    27    282  LCURLY
+    28    283  RCURLY
+    29    284  ERROR
+    30    285  XIF
+    31    286  $accept
+    32    287  program
+    33    288  stmt_seq
+    34    289  stmt
+    35    290  var_stmt
+    36    291  fun_stmt
+    37    292  type_spec
+    38    293  identifier
+    39    294  number
+    40    295  params
+    41    296  comp_stmt
+    42    297  param_list
+    43    298  param
+    44    299  local_stmt
+    45    300  stmt_list
+    46    301  statement
+    47    302  expr_stmt
+    48    303  sel_stmt
+    49    304  it_stmt
+    50    305  ret_stmt
+    51    306  expr
+    52    307  var
+    53    308  simp_expr
+    54    309  sum_exp
+    55    310  relat
+    56    311  sum
+    57    312  term
+    58    313  mult
+    59    314  factor
+    60    315  activation
+    61    316  args_seq
